@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect to Watch</title>
+</head>
+<body>
+    <h1>Bluetooth Watch Services</h1>
+    <button id="connectButton">Connect to Watch</button>
+    <div id="output" style="margin-top: 20px;">
+        <h2>Available Services and Characteristics</h2>
+        <ul id="servicesList"></ul>
+    </div>
+
+    <script>
+        document.getElementById('connectButton').addEventListener('click', async () => {
+            try {
+                // Request a Bluetooth device
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: ['heart_rate', 'battery_service', 'device_information', 'generic_access'] // Add specific services UUIDs here if known
+                });
+
+                // Connect to the GATT server
+                const server = await device.gatt.connect();
+
+                // Get the list of services
+                const services = await server.getPrimaryServices();
+
+                const servicesList = document.getElementById('servicesList');
+                servicesList.innerHTML = ''; // Clear any existing content
+
+                for (const service of services) {
+                    const serviceItem = document.createElement('li');
+                    serviceItem.textContent = `Service: ${service.uuid}`;
+
+                    // Get characteristics of the service
+                    const characteristics = await service.getCharacteristics();
+                    const charList = document.createElement('ul');
+
+                    for (const characteristic of characteristics) {
+                        const charItem = document.createElement('li');
+                        charItem.textContent = `Characteristic: ${characteristic.uuid}`;
+                        charList.appendChild(charItem);
+                    }
+
+                    serviceItem.appendChild(charList);
+                    servicesList.appendChild(serviceItem);
+                }
+            } catch (error) {
+                console.error('An error occurred:', error);
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
