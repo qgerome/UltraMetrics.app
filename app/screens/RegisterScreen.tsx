@@ -9,15 +9,21 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import { useHeader } from "@/utils/useHeader"
 import { useNavigation } from "@react-navigation/native"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
+interface RegisterScreenProps extends AppStackScreenProps<"Register"> {}
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+export const RegisterScreen: FC<RegisterScreenProps> = observer(function RegisterScreen(_props) {
   const authPasswordInput = useRef<TextInput>(null)
+  const lastNameInput = useRef<TextInput>(null)
+  const phoneNumberInput = useRef<TextInput>(null)
+  const authEmailInput = useRef<TextInput>(null)
 
   const [authPassword, setAuthPassword] = useState("")
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
   const {
     authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
   } = useStores()
@@ -36,8 +42,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   useEffect(() => {
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("demo@demo.com")
-    setAuthPassword("demodemo")
+    // setAuthEmail("ignite@infinite.red")
+    // setAuthPassword("ign1teIsAwes0m3")
 
     // Return a "cleanup" function that React will run when the component unmounts
     return () => {
@@ -48,7 +54,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   const error = isSubmitted ? validationError : ""
 
-  function login() {
+  function register() {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
 
@@ -80,18 +86,59 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     [isAuthPasswordHidden, colors.palette.neutral800],
   )
 
+  const isFormValid = firstName && lastName && phoneNumber && authEmail && authPassword
+
   return (
     <Screen
       preset="auto"
       contentContainerStyle={themed($screenContentContainer)}
       safeAreaEdges={["bottom"]}
     >
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
-      {attemptsCount > 2 && (
-        <Text tx="loginScreen:hint" size="sm" weight="light" style={themed($hint)} />
-      )}
+      <Text testID="register-heading" preset="heading" style={themed($logIn)}>
+        Register
+      </Text>
 
       <TextField
+        value={firstName}
+        onChangeText={setFirstName}
+        containerStyle={themed($textField)}
+        autoCapitalize="words"
+        autoComplete="given-name"
+        autoCorrect={false}
+        label="First Name"
+        placeholder="Enter your first name"
+        onSubmitEditing={() => lastNameInput.current?.focus()}
+      />
+
+      <TextField
+        ref={lastNameInput}
+        value={lastName}
+        onChangeText={setLastName}
+        containerStyle={themed($textField)}
+        autoCapitalize="words"
+        autoComplete="family-name"
+        autoCorrect={false}
+        label="Last Name"
+        placeholder="Enter your last name"
+        onSubmitEditing={() => phoneNumberInput.current?.focus()}
+      />
+
+      <TextField
+        ref={phoneNumberInput}
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
+        containerStyle={themed($textField)}
+        autoCapitalize="none"
+        autoCorrect={false}
+        autoComplete="tel"
+        keyboardType="phone-pad"
+        label="Phone Number"
+        placeholder="Enter your phone number"
+        onSubmitEditing={() => authEmailInput.current?.focus()}
+      />
+
+      <TextField
+        ref={authEmailInput}
         value={authEmail}
         onChangeText={setAuthEmail}
         containerStyle={themed($textField)}
@@ -117,12 +164,19 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         secureTextEntry={isAuthPasswordHidden}
         labelTx="loginScreen:passwordFieldLabel"
         placeholderTx="loginScreen:passwordFieldPlaceholder"
-        onSubmitEditing={login}
+        onSubmitEditing={register}
         RightAccessory={PasswordRightAccessory}
       />
 
-      <Button testID="login-button" style={themed($tapButton)} preset="filled" onPress={login}>
-        Log In
+      <Button
+        testID="register-button"
+        style={themed($registerButton)}
+        preset="filled"
+        onPress={register}
+        disabled={!isFormValid}
+        disabledStyle={themed($registerButtonDisabled)}
+      >
+        Register
       </Button>
     </Screen>
   )
@@ -133,13 +187,17 @@ const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
 })
 
 const $logIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.sm,
+  marginBottom: spacing.md,
 })
 
 const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
 })
 
-const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $registerButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.xs,
+})
+
+const $registerButtonDisabled: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  backgroundColor: colors.palette.neutral400,
 })

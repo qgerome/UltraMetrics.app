@@ -1,10 +1,10 @@
 {
-  "name": "native-app-2",
-  "displayName": "native-app-2",
+  "name": "UltraMetrics",
+  "displayName": "UltraMetrics",
   "expo": {
-    "name": "native-app-2",
-    "slug": "native-app-2",
-    "scheme": "native-app-2",
+    "name": "UltraMetrics",
+    "slug": "UltraMetrics",
+    "scheme": "UltraMetrics",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -19,22 +19,37 @@
     ],
     "android": {
       "icon": "./assets/images/app-icon-android-legacy.png",
-      "package": "com.nativeapp2",
+      "package": "com.ultrametrics",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
         "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
-      }
+      },
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
+      ]
     },
     "ios": {
       "icon": "./assets/images/app-icon-ios.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.nativeapp2"
+      "bundleIdentifier": "com.ultrametrics"
     },
     "web": {
       "favicon": "./assets/images/app-icon-web-favicon.png",
       "bundler": "metro"
     },
     "plugins": [
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": true,
+          "modes": [
+            "central",
+            "peripheral"
+          ]
+        }
+      ],
       "expo-localization",
       "expo-font",
       [
@@ -45,7 +60,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#191015"
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "tsconfigPaths": true
